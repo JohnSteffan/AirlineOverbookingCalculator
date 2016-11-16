@@ -4,6 +4,7 @@ from sklearn.cross_validation import train_test_split
 import random
 import scipy.stats as scs
 import matplotlib.pyplot as plt
+from sklearn.linear_model import LogisticRegression
 
 
 def get_key_from_df(df_row):
@@ -31,6 +32,8 @@ def st_func(ts):
     return ts.strftime("%Y-%m-%d")
 def sta_func(ts):
     return 1
+
+
 
 if __name__ == '__main__':
    # setting up data array
@@ -77,8 +80,8 @@ if __name__ == '__main__':
    #data = data[data['Month'] ==5] # 5, 6, 7 not work, 8, 9 (10 out of 371), 10 (22 out of 441), 11 (31 out of 491), 12 33/537, 1 31/576
    #2 22/617, 3 13/636, 4, 10/553
    data = data[data['Month'].isin(monthlist)]
-   #data = data[data['Day'] ==5]
-   nflightstest = 1000
+   data = data[data['Day'].isin([1,2,3,4])]
+   nflightstest = 100
    #data = data[data['Departure Station '] =='SEA']
 
    data['Status_ '] = (data['Status_ '] == "NoShow").astype(int)
@@ -172,11 +175,19 @@ if __name__ == '__main__':
 
    y_train = traindata['Status_ '].values
    X_train = traindata[['age ','ancfee','DepartHour ', 'DOWDepart ', 'Channel ', 'PaxOnPNR ', 'AP ','FLA','INT','LAS','ticketrev ']].values
-
+   #y_test =  testdata['Status_ '].values
+   #X_test = testdata[['age ','ancfee','DepartHour ', 'DOWDepart ', 'Channel ', 'PaxOnPNR ', 'AP ','FLA','INT','LAS','ticketrev ']].values
    #Clear data from memory
    del traindata
    del data
    gc.collect()
+
+
+   model = LogisticRegression()
+   model.fit(X_train, y_train)
+
+
+
 
    from sklearn.ensemble import RandomForestClassifier
    print "\nStarting RF classifier"
@@ -214,6 +225,17 @@ if __name__ == '__main__':
             print "Predicted No Show", NoShowPred
             print "Actual No Show", y_test.sum()
             print "PAX total", len(prba)
+            A = []
+            
+
+            probabilities = model.predict_proba(X_test)[:, 1]
+            for p in probabilities:
+                A.append(np.random.binomial(1, p, 1000))
+            B = sum(A)
+            NoShowPred2 = int(np.percentile(B, 5, interpolation = 'lower'))
+
+            print "Predicted No Show2", NoShowPred2
+
             flightcount = flightcount +1
             #Suggested Over Booking
             obsuggest += NoShowPred
