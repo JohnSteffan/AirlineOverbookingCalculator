@@ -1,4 +1,4 @@
-varlist = ['Age','Ancillary','D_Hour', 'DOW', 'Channel', 'Group Size', 'AP','FLA','INT','LAS','Price']
+varlist = ['Age','Ancillary','D_Hour', 'DOW', 'Channel', 'Group Size', 'AP','FLA','INT','LAS','Price','Child','CheapTick5','CheapTick10',5,6,7, 8, 9, 10, 11,12,13,14,15,16,17,18,19,20,21,22,23]
 importances = clf.feature_importances_
 indices = np.argsort(importances)[::-1]
 varlist2 = []

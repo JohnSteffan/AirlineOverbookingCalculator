@@ -38,6 +38,7 @@ def sta_func(ts):
 if __name__ == '__main__':
    # setting up data array
    dataSF = pd.read_csv('../pdata/NoShowStillFly.csv')
+   testmethod = 1
    dataSF['OrigDepartTime'] = pd.DatetimeIndex(dataSF['OrigDepartTime'], inplace = True)
 
    data = pd.read_csv('../pdata/BigDataFinal.csv')#,dtype={'SegmentID ': int})#,'DOWDepart ': int, 'DOWBooking ': int, 'Channel ': int, 'Fltnum ': int})#, 'PaxOnPNR ': int, 'BAG1 ': int, 'COB1 ': int, 'SEAT ': int, 'PAX ': int, 'DepartHour ': int, 'age ': int, 'AP ': int})
@@ -74,14 +75,16 @@ if __name__ == '__main__':
    data['Month'] = pd.DatetimeIndex(data['DDate ']).month
    data['Day'] = pd.DatetimeIndex(data['DDate ']).day
    monthlist = [1,2,3,4]
-   monthlistTrain = [1, 2, 3]#148 953
+   monthlistTrain = [2]#148 953
    monthlistTest = [4]
    #monthlist = [5]
    #data = data[data['Month'] ==5] # 5, 6, 7 not work, 8, 9 (10 out of 371), 10 (22 out of 441), 11 (31 out of 491), 12 33/537, 1 31/576
    #2 22/617, 3 13/636, 4, 10/553
    data = data[data['Month'].isin(monthlist)]
-   data = data[data['Day'].isin([1,2,3,4])]
-   nflightstest = 100
+   #data = data[data['Day'].isin([1,2,3,4,5,6,7])]
+   #data = data[data['Day'] == 5]
+
+   nflightstest = 2000
    #data = data[data['Departure Station '] =='SEA']
 
    data['Status_ '] = (data['Status_ '] == "NoShow").astype(int)
@@ -91,8 +94,21 @@ if __name__ == '__main__':
    data['AP '] = data['AP '].astype(int)
    data['DepartHour '] = data['DepartHour '].astype(int)
    data['PaxOnPNR '] = data['PaxOnPNR '].astype(int)
+   S = pd.get_dummies(data['DepartHour '])
+   data[S.columns] = S
+
+
+
+
+   #data['Status_ '].groupby(data['ticketrev '].round(0)).mean().plot(xlim = (0, 40))
+   #plt.show()
+   #data['Status_ '].groupby(data['AP ']).mean().plot(xlim = (0, 40))
+   #plt.show()
 
    data['Channel '] = data['Channel '].astype(int)
+   data['CheapTick5'] = np.where(data['ticketrev '] < 5, 1, 0).astype(int)
+   data['CheapTick10'] = np.where(data['ticketrev '] < 10, 1, 0).astype(int)
+
    data['ticketrev '] = data['ticketrev '].round(-1).astype(int)
 
 
@@ -131,6 +147,7 @@ if __name__ == '__main__':
    #data.drop('PID ', axis = 1, inplace = True)
    data.drop('PAX ', axis = 1, inplace = True)
    data.drop('BAG1 ', axis = 1, inplace = True)
+   data['Child'] = np.where(data['age '] < 17, 1, 0).astype(int)
 
    #data = data.astype(int)
    # dataanc = data[data['ancfee'] == 1]
@@ -141,8 +158,6 @@ if __name__ == '__main__':
    # data['Status_ '].groupby(data['age ']).mean().plot()
    # plt.show()
    # data['Status_ '].groupby(data['DepartHour ']).mean().plot()
-   # plt.show()
-   # data['Status_ '].groupby(data['ticketrev '].round(-1)).mean().plot(xlim = (0, 400))
    # plt.show()
 
 
@@ -162,25 +177,75 @@ if __name__ == '__main__':
 
 
    #Set train data
-   traindata = data[data['Month'].isin(monthlistTrain)]
-   testdata = data[data['Month'].isin(monthlistTest)]
-   flights = data['Status_ '].groupby(data['flt_key']).count()
+   if testmethod == 0:
 
-   #Select test flights (Don't evaluate all to save computational time)
-   flights = testdata['Status_ '].groupby(testdata['flt_key']).count()
-   listofflights = flights.index.values.tolist()
-   random.shuffle(listofflights)
-   testfltlist = listofflights[:nflightstest]
+       traindata = data[data['Month'].isin(monthlistTrain)]
+       testdata = data[data['Month'].isin(monthlistTest)]
+       flights = data['Status_ '].groupby(data['flt_key']).count()
+
+       #Select test flights (Don't evaluate all to save computational time)
+       flights = testdata['Status_ '].groupby(testdata['flt_key']).count()
+       listofflights = flights.index.values.tolist()
+       random.shuffle(listofflights)
+       testfltlist = listofflights[:nflightstest]
+   #testfltcount = groupby()
+
+   if testmethod == 1:
+       traindata = data[data['Month'].isin(monthlistTrain)]
+       flights = traindata['Status_ '].groupby(traindata['flt_key']).count()
+       listofflights = flights.index.values.tolist()
+       random.shuffle(listofflights)
+       testfltlist = listofflights[:nflightstest]
+       trainfltlist = listofflights[nflightstest:]
+       traindata = data[data['flt_key'].isin(trainfltlist)]
+       testdata = data[data['flt_key'].isin(testfltlist)]
+
+
 
 
    y_train = traindata['Status_ '].values
-   X_train = traindata[['age ','ancfee','DepartHour ', 'DOWDepart ', 'Channel ', 'PaxOnPNR ', 'AP ','FLA','INT','LAS','ticketrev ']].values
+   X_train = traindata[['age ','ancfee','DepartHour ', 'DOWDepart ', 'Channel ', 'PaxOnPNR ', 'AP ','FLA','INT','LAS','ticketrev ','Child','CheapTick5','CheapTick10',5,6,7, 8, 9, 10, 11,12,13,14,15,16,17,18,19,20,21,22,23]].values
    #y_test =  testdata['Status_ '].values
    #X_test = testdata[['age ','ancfee','DepartHour ', 'DOWDepart ', 'Channel ', 'PaxOnPNR ', 'AP ','FLA','INT','LAS','ticketrev ']].values
    #Clear data from memory
+   #X_train = traindata[['ancfee','DepartHour ', 'CheapTick10']].values
+
    del traindata
    del data
    gc.collect()
+   from sklearn.grid_search import GridSearchCV
+   from sklearn.ensemble import RandomForestRegressor
+
+   # random_forest_grid = {'max_depth': [3, None],
+   #                    'max_features': ['sqrt', 'log2', None],
+   #                    'min_samples_split': [1, 2, 4],
+   #                    'min_samples_leaf': [1, 2, 4],
+   #                    'bootstrap': [True, False],
+   #                    'n_estimators': [10, 20, 40],
+   #                    'random_state': [1]}
+   #
+   # rf_gridsearch = GridSearchCV(RandomForestRegressor(),
+   #                           random_forest_grid,
+   #                           n_jobs=-1,
+   #                           verbose=True,
+   #                           scoring='mean_squared_error')
+   # rf_gridsearch.fit(X_train, y_train)
+   #
+   # print "best parameters:", rf_gridsearch.best_params_
+#
+# {'bootstrap': True,
+#  'max_depth': None,
+#  'max_features': 'sqrt',
+#  'min_samples_leaf': 1,
+#  'min_samples_split': 1,
+#  'n_estimators': 40,
+#  'random_state': 1}
+
+
+
+
+   best_rf_model = rf_gridsearch.best_estimator_
+
 
 
    model = LogisticRegression()
@@ -206,12 +271,18 @@ if __name__ == '__main__':
    flightcount = 0
    bumpcount = 0
    obsuggest = 0
+   failcount2 = 0
+   bumpcount2 = 0
+   obsuggest2 = 0
+
    for flt_i in testfltlist:
-       testdata1 = testdata[testdata['flt_key'] == flt_i]
+       #testdata1 = testdata[testdata['flt_key'] == flt_i]
        # We only care about flights with over 160 passengers booked
-       if len(testdata1) > 160:
+       if flights[flt_i] > 160:
+            testdata1 = testdata[testdata['flt_key'] == flt_i]
+
             y_test = testdata1['Status_ '].values
-            X_test = testdata1[['age ','ancfee','DepartHour ', 'DOWDepart ', 'Channel ', 'PaxOnPNR ', 'AP ','FLA','INT','LAS','ticketrev ']].values
+            X_test = testdata1[['age ','ancfee','DepartHour ', 'DOWDepart ', 'Channel ', 'PaxOnPNR ', 'AP ','FLA','INT','LAS','ticketrev ','Child','CheapTick5','CheapTick10',5,6,7, 8, 9, 10, 11,12,13,14,15,16,17,18,19,20,21,22,23]].values
             prba = classifier.predict_proba(X_test)
             probarray = np.array(prba[:,1])
 
@@ -226,7 +297,7 @@ if __name__ == '__main__':
             print "Actual No Show", y_test.sum()
             print "PAX total", len(prba)
             A = []
-            
+
 
             probabilities = model.predict_proba(X_test)[:, 1]
             for p in probabilities:
@@ -239,11 +310,19 @@ if __name__ == '__main__':
             flightcount = flightcount +1
             #Suggested Over Booking
             obsuggest += NoShowPred
+            obsuggest2 += NoShowPred2
+
 
             # If we overbooked too much and passengers would have needed to be bumped
             if y_test.sum() < NoShowPred:#*len(prba))*1.0-1.0:
                print "FAIL!!!!"
                failcount = failcount +1
                bumpcount += y_test.sum() - NoShowPred
+            if y_test.sum() < NoShowPred2:#*len(prba))*1.0-1.0:
+               print "FAIL!!!!"
+               failcount2 = failcount2 +1
+               bumpcount2 += y_test.sum() - NoShowPred2
    print "\n Fail Count", failcount,flightcount
    print "\n Bump / OB suggest", bumpcount, obsuggest
+   print "\n Fail Count2", failcount2,flightcount
+   print "\n Bump / OB suggest2", bumpcount2, obsuggest2
