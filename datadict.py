@@ -39,6 +39,15 @@ if __name__ == '__main__':
    # setting up data array
    dataSF = pd.read_csv('../pdata/NoShowStillFly.csv')
    testmethod = 1
+   #datalist = ['ancfee', 'DOWDepart ', 'Channel ', 'PaxOnPNR ','FLA','INT','LAS','ticketrev ','Child','CheapTick5','CheapTick10',5,6,7, 8, 9, 10, 11,12,13,14,15,16,17,18,19,20,21,22,23, 'AP3','AP7','AP14','AP21','AP28','AP35','AP45']
+   datalist = ['age ','ancfee', 'PaxOnPNR ','FLA','INT','LAS','CheapTick5','CheapTick10',7, 8, 10, 11,12,13,14,15,16,17,18,21,22,23,'Child','Age20','Age30','Age40','Age50','Age60','Age70']#, 'AP3','AP7','AP14','AP21','AP28','AP35','AP45']
+   datalist =  ['age ','ancfee', 'PaxOnPNR ','INT','LAS','ticketrev ',7, 8, 10, 11,12,13,14,15,16,17,18,19,22,23]#['age ','ancfee', 'PaxOnPNR ','FLA','INT','LAS','CheapTick5','CheapTick10',7, 8, 10, 11,12,13,14,15,16,17,18,21,22,23,'Child','Age20','Age30','Age40','Age50','Age60','Age70']#, 'AP3','AP7','AP14','AP21','AP28','AP35','AP45']
+
+   datalist2 = ['age ','ancfee', 'PaxOnPNR ','INT','ticketrev ',7, 8, 10, 11,12,13,14,15,16,17,18,19,22,23]#, 'AP3','AP7','AP14','AP21','AP28','AP35','AP45']
+   #datalist2 = ['age ','ancfee', 'PaxOnPNR ','FLA','INT','LAS','ticketrev ','Child',5,6,7, 8, 9, 10, 11,12,13,14,15,16,17,18,19,20,21,22,23]#, 'AP3','AP7','AP14','AP21','AP28','AP35','AP45']
+
+   #datalist = ['AP ','age ','ancfee', 'PaxOnPNR ','ticketrev ','Child',5,6,7, 8, 9, 10, 11,12,13,14,15,16,17,18,19,20,21,22,23]#, 'AP3','AP7','AP14','AP21','AP28','AP35','AP45']
+
    dataSF['OrigDepartTime'] = pd.DatetimeIndex(dataSF['OrigDepartTime'], inplace = True)
 
    data = pd.read_csv('../pdata/BigDataFinal.csv')#,dtype={'SegmentID ': int})#,'DOWDepart ': int, 'DOWBooking ': int, 'Channel ': int, 'Fltnum ': int})#, 'PaxOnPNR ': int, 'BAG1 ': int, 'COB1 ': int, 'SEAT ': int, 'PAX ': int, 'DepartHour ': int, 'age ': int, 'AP ': int})
@@ -75,7 +84,7 @@ if __name__ == '__main__':
    data['Month'] = pd.DatetimeIndex(data['DDate ']).month
    data['Day'] = pd.DatetimeIndex(data['DDate ']).day
    monthlist = [1,2,3,4]
-   monthlistTrain = [2]#148 953
+   monthlistTrain = [1,2,3]#148 953
    monthlistTest = [4]
    #monthlist = [5]
    #data = data[data['Month'] ==5] # 5, 6, 7 not work, 8, 9 (10 out of 371), 10 (22 out of 441), 11 (31 out of 491), 12 33/537, 1 31/576
@@ -84,14 +93,13 @@ if __name__ == '__main__':
    #data = data[data['Day'].isin([1,2,3,4,5,6,7])]
    #data = data[data['Day'] == 5]
 
-   nflightstest = 2000
+   nflightstest = 5000
    #data = data[data['Departure Station '] =='SEA']
 
    data['Status_ '] = (data['Status_ '] == "NoShow").astype(int)
    data['SegmentID '] = data['SegmentID '].astype(int)
    data['Fltnum '] = data['Fltnum '].astype(int)
-   data['age '] = data['age '].astype(int)
-   data['AP '] = data['AP '].astype(int)
+
    data['DepartHour '] = data['DepartHour '].astype(int)
    data['PaxOnPNR '] = data['PaxOnPNR '].astype(int)
    S = pd.get_dummies(data['DepartHour '])
@@ -108,8 +116,31 @@ if __name__ == '__main__':
    data['Channel '] = data['Channel '].astype(int)
    data['CheapTick5'] = np.where(data['ticketrev '] < 5, 1, 0).astype(int)
    data['CheapTick10'] = np.where(data['ticketrev '] < 10, 1, 0).astype(int)
+   data['AP3'] = np.where(data['AP '] < 4, 1, 0).astype(int)
+
+   data['AP7'] = np.where((data['AP '] >= 4) & (data['AP '] <8), 1, 0).astype(int)
+   data['AP14'] = np.where((data['AP '] >= 8) & (data['AP ']<15), 1, 0).astype(int)
+   data['AP21'] = np.where((data['AP '] >= 15) & (data['AP ']<22), 1, 0).astype(int)
+   data['AP28'] = np.where((data['AP '] >= 22) & (data['AP ']<28), 1, 0).astype(int)
+   data['AP35'] = np.where((data['AP '] >= 28) & (data['AP ']<36), 1, 0).astype(int)
+   data['AP45'] = np.where((data['AP '] >= 36) & (data['AP ']<500), 1, 0).astype(int)
+
+   data['Age20'] = np.where((data['age '] >= 18) & (data['age ']<30), 1, 0).astype(int)
+   data['Age30'] = np.where((data['age '] >= 30) & (data['age ']<40), 1, 0).astype(int)
+
+   data['Age40'] = np.where((data['age '] >= 40) & (data['age ']<50), 1, 0).astype(int)
+   data['Age50'] = np.where((data['age '] >= 50) & (data['age ']<60), 1, 0).astype(int)
+   data['Age60'] = np.where((data['age '] >= 60) & (data['age ']<70), 1, 0).astype(int)
+   data['Age70'] = np.where((data['age '] >= 70) & (data['age ']<80), 1, 0).astype(int)
+   #data['Age80'] = np.where((data['age '] >= 80) & (data['age ']<90), 1, 0).astype(int)
+
+
+
+
+
 
    data['ticketrev '] = data['ticketrev '].round(-1).astype(int)
+
 
 
 # for month 4, uing months 11 to 3, got 170 fails out of 1264, over book was 281 to 3442
@@ -123,6 +154,7 @@ if __name__ == '__main__':
    data = data[data['age '] > 2.5]
    data = data[data['age '] < 80.5]
 
+
    data = data[data['DepartHour '] > 4.5]
    # Make list of flight types
    fla_list = ['MIA', 'MCO', 'PBI', 'RSW', 'TPA','UST']
@@ -135,6 +167,8 @@ if __name__ == '__main__':
    data['FLA'] = np.where(data['Arrival Station '].isin(fla_list) | data['Departure Station '].isin(fla_list), 1, 0)
    data['INT'] = np.where(data['Arrival Station '].isin(int_list) | data['Departure Station '].isin(int_list), 1, 0)
    data['LAS'] = np.where(data['Arrival Station '].isin(las_list) | data['Departure Station '].isin(las_list), 1, 0)
+   #data = data[data['INT'] == 0]
+
 
    #Drop unneed data
    data.drop('SEAT ', axis = 1, inplace = True)
@@ -160,7 +194,9 @@ if __name__ == '__main__':
    # data['Status_ '].groupby(data['DepartHour ']).mean().plot()
    # plt.show()
 
-
+   data['age '] = data['age '].divide(80.)
+   data['AP '] = data['AP '].divide(45.)
+   data['ticketrev '] = data['ticketrev '].divide(400.)
    #Create a flight key so that individual flights can be looked up
    data['flt_key'] = data.apply(get_key_from_df_flt, axis = 1)
    print "\nFlt key complette"
@@ -204,7 +240,9 @@ if __name__ == '__main__':
 
 
    y_train = traindata['Status_ '].values
-   X_train = traindata[['age ','ancfee','DepartHour ', 'DOWDepart ', 'Channel ', 'PaxOnPNR ', 'AP ','FLA','INT','LAS','ticketrev ','Child','CheapTick5','CheapTick10',5,6,7, 8, 9, 10, 11,12,13,14,15,16,17,18,19,20,21,22,23]].values
+   X_train = traindata[datalist].values
+   X_train2 = traindata[datalist2].values
+
    #y_test =  testdata['Status_ '].values
    #X_test = testdata[['age ','ancfee','DepartHour ', 'DOWDepart ', 'Channel ', 'PaxOnPNR ', 'AP ','FLA','INT','LAS','ticketrev ']].values
    #Clear data from memory
@@ -244,12 +282,15 @@ if __name__ == '__main__':
 
 
 
-   best_rf_model = rf_gridsearch.best_estimator_
+   #best_rf_model = rf_gridsearch.best_estimator_
 
 
 
-   model = LogisticRegression()
+   model = LogisticRegression(n_jobs = 3)
    model.fit(X_train, y_train)
+
+   model2 = LogisticRegression()
+   model2.fit(X_train2, y_train)
 
 
 
@@ -258,8 +299,8 @@ if __name__ == '__main__':
    print "\nStarting RF classifier"
 
    #Start random forest
-   clf = RandomForestClassifier(n_estimators=50, max_depth=None, min_samples_split=1, random_state=0)
-   classifier = clf.fit(X_train, y_train)
+   #clf = RandomForestClassifier(n_estimators=50, max_depth=None, min_samples_split=1, random_state=0)
+   #classifier = clf.fit(X_train, y_train)
 
    # Clear Memory
    del X_train
@@ -274,7 +315,10 @@ if __name__ == '__main__':
    failcount2 = 0
    bumpcount2 = 0
    obsuggest2 = 0
-
+   noshowhist = []
+   failcount3 = 0
+   bumpcount3 = 0
+   obsuggest3 = 0
    for flt_i in testfltlist:
        #testdata1 = testdata[testdata['flt_key'] == flt_i]
        # We only care about flights with over 160 passengers booked
@@ -282,20 +326,21 @@ if __name__ == '__main__':
             testdata1 = testdata[testdata['flt_key'] == flt_i]
 
             y_test = testdata1['Status_ '].values
-            X_test = testdata1[['age ','ancfee','DepartHour ', 'DOWDepart ', 'Channel ', 'PaxOnPNR ', 'AP ','FLA','INT','LAS','ticketrev ','Child','CheapTick5','CheapTick10',5,6,7, 8, 9, 10, 11,12,13,14,15,16,17,18,19,20,21,22,23]].values
-            prba = classifier.predict_proba(X_test)
-            probarray = np.array(prba[:,1])
-
-            #Bootstrap our probabilities for each passenger to get a 95 % CI
-            A = []
-            for p in probarray:
-                A.append(np.random.binomial(1, p, 1000))
-            B = sum(A)
-            NoShowPred = int(np.percentile(B, 5, interpolation = 'lower'))
+            X_test = testdata1[datalist].values
+            # prba = classifier.predict_proba(X_test)
+            # probarray = np.array(prba[:,1])
+            #
+            # #Bootstrap our probabilities for each passenger to get a 95 % CI
+            # A = []
+            # for p in probarray:
+            #     A.append(np.random.binomial(1, p, 1000))
+            # B = sum(A)
+            # NoShowPred = int(np.percentile(B, 5, interpolation = 'lower'))
             print "\nFlight =", flt_i
-            print "Predicted No Show", NoShowPred
+            #print "Predicted No Show", NoShowPred
             print "Actual No Show", y_test.sum()
-            print "PAX total", len(prba)
+            print "PAX total", flights[flt_i]
+            #noshowhist.append(y_test.sum())
             A = []
 
 
@@ -306,23 +351,49 @@ if __name__ == '__main__':
             NoShowPred2 = int(np.percentile(B, 5, interpolation = 'lower'))
 
             print "Predicted No Show2", NoShowPred2
+            print "Predicted No Confidence", model.decision_function(X_test).mean()
+
+            A = []
+            X_test2 = testdata1[datalist2].values
+
+
+            probabilities = model2.predict_proba(X_test2)[:, 1]
+            for p in probabilities:
+                A.append(np.random.binomial(1, p, 1000))
+            B = sum(A)
+            NoShowPred3 = int(np.percentile(B, 5, interpolation = 'lower'))
+
+            print "Predicted No Show3", NoShowPred3
+            print "Predicted No Confidence", model2.decision_function(X_test2).mean()
+            # if model2.decision_function(X_test2).mean() < -3.6:
+            #     if  NoShowPred3 >0:
+            #         NoShowPred3 -= 1
+
 
             flightcount = flightcount +1
             #Suggested Over Booking
-            obsuggest += NoShowPred
+            #obsuggest += NoShowPred
             obsuggest2 += NoShowPred2
+            obsuggest3 += NoShowPred3
+
 
 
             # If we overbooked too much and passengers would have needed to be bumped
-            if y_test.sum() < NoShowPred:#*len(prba))*1.0-1.0:
-               print "FAIL!!!!"
-               failcount = failcount +1
-               bumpcount += y_test.sum() - NoShowPred
+            # if y_test.sum() < NoShowPred:#*len(prba))*1.0-1.0:
+            #    print "FAIL!!!!"
+            #    failcount = failcount +1
+            #    bumpcount += y_test.sum() - NoShowPred
             if y_test.sum() < NoShowPred2:#*len(prba))*1.0-1.0:
                print "FAIL!!!!"
                failcount2 = failcount2 +1
                bumpcount2 += y_test.sum() - NoShowPred2
+            if y_test.sum() < NoShowPred3:#*len(prba))*1.0-1.0:
+               print "FAIL!!!!"
+               failcount3 = failcount3 +1
+               bumpcount3 += y_test.sum() - NoShowPred3
    print "\n Fail Count", failcount,flightcount
    print "\n Bump / OB suggest", bumpcount, obsuggest
    print "\n Fail Count2", failcount2,flightcount
    print "\n Bump / OB suggest2", bumpcount2, obsuggest2
+   print "\n Fail Count3", failcount3,flightcount
+   print "\n Bump / OB suggest3", bumpcount3, obsuggest3
