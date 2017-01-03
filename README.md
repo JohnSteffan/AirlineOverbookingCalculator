@@ -1,163 +1,72 @@
-# AirlineOverbookingCalculator
-Passenger based overbooking calculator
+## Personal Background
 
+During my time as an operations research analyst at Frontier Airlines, I had access to a lot of data,
+that I could not fully take advantage of.  This is what motivated me to study Data Science at Galvanize.
 
-Different Changes:  Engineer AP and AGE, ADD in child, see how imortances and signs change
+One of the problems in particular that I took interest in was how to use passenger level data to determine the optimal overbooking level for a given upcoming flight.  If passenger level data shows a very low chance of no shows, there should not be any overbooking.
 
+## Overview
 
-Below we compare having the flight typ, to not having it.  We have around 25% more fails, but only a few extra seats sold.
-Fail Count2 110 702
+Anytime a flight takes off with an empty seat due to a passenger not showing up for their flight (no show), the airline looses potential revenue, because an extra seat could have been sold.  The objective of this project is to discover how to recover some of this potential revenue, without bumping too many passengers.
 
-Bump / OB suggest2 -181 2295
+It is believed that data on individual passengers (Age, Advanced Purchase, Ancillary Purchase,...) that have purchased tickets can greatly influence their probability of showing up.
 
-Fail Count3 84 702
+In the event that an airline overbooks too much, and passengers have to be bumped, passengers will first be offered compansation in the form of airline flight vouchers to take a later flight.  Thus, a passenger that volunerally takes this compansation would be happier than had they taken the original flight.
 
-Bump / OB suggest3 -123 2219
+## Current Method
 
+In the current method, previous flights are looked at and the no show rate for the bottom 10th quartile is used for the overbooking rate.
 
-With and without flight hour
-Fail Count2 96 663
+Flights without historical information would not be overbooked.
 
-Bump / OB suggest2 -173 2160
+Passengers who missed their original flights but were rebooked on later flights would not be considered no shows.
 
-Fail Count3 81 663
+## EDA
 
-Bump / OB suggest3 -137 2162
+If we combine the age of a passenger, and weather or not they purchase an ancillary item, we get the below graph.  The graph below shows that passengers that purchase ancillary items are more likely to show up for there flight than those who do not.  It also appears that 10 year olds are the most likely to make a flight, while 20 year olds are the least likely.
 
-predicting April
-Fail Count 110 625
+![alt text](Figs/Age2.png)
 
-Bump / OB suggest -204 1938
+## Features
 
-Fail Count2 102 625
+For this study the following features were pulled for a one year period for Frontier Airlines.
 
-Bump / OB suggest2 -175 1737
+| Feature Name | Description |
+| ------------ |:------------------------:|
+| Age | Passenger Age |
+| AP | Days in advance the ticket was purchased |
+| PAX | The number of passengers on a reservation |
+| Ancillary | Was an ancillary item purchased at time of booking (y/n) |
+| Ticket Revenue | Cost of ticket |
+| Flight Type | Type of flight market, International, Vegas,... |
+| Flight Hour | Hour of the day that the flight departs |
+|  |  |
 
-Fail Count3 75 625
 
-Bump / OB suggest3 -115 1695
+## Flight Level Results
 
-AP Class vs AP continuous
-Fail Count 111 690
+If we look at two flights, one of which had zero no shows, and the other which had two, the usefulness of the model can be shown.
+#### Flight 86: St Louis to Cancun
 
-Bump / OB suggest -214 2450
+| 4/21 | 4/28 |
+| ------------ |:------------------------:|
+| 0 no shows predicted | 1 no show predicted |
+| 0 actual no shows | 2 actual no shows |
 
-Fail Count2 78 690
+[logo]: https://github.com/JohnSteffan/AirlineOverbookingCalculator/tree/master/Figs/EngineerAge.png "text1"
 
-Bump / OB suggest2 -130 2074
 
-Fail Count3 82 690
+## Overall Results
+For this example, January to March 2016 data was used to predict April 2016 no shows.  The acutall no shows for April 2016 were then compared to the two model predictions.
 
-Bump / OB suggest3 -130 2072
+In April 2016 there were a total of 28,252 no shows, which gives plenty of space for additional revenue.
 
-NO AP at all
-Fail Count2 81 702
+Assuming $75 in additional revenue, and a $200 cost for bumping a passenger,
 
-Bump / OB suggest2 -113 2033
+| | Current System | Logistic Regression |
+| ------------ |:------------------------:|:------------------------:|
+| Increased Passengers | 2,005 | 6,492 |
+| Bumped Passengers | 111 | 505 |
+| Additional Revenue | $128,175 | $385,900 |
 
-Fail Count3 79 702
-
-Bump / OB suggest3 -112 2035
-
-
-Take price from the engineered variables
-Fail Count2 110 699
-
-Bump / OB suggest2 -175 2026
-
-Fail Count3 83 699
-
-Bump / OB suggest3 -119 1984
-
-Engineer age
-Fail Count2 104 684
-
-Bump / OB suggest2 -154 2026
-
-Fail Count3 89 684
-
-Bump / OB suggest3 -116 2042
-
-Remove some hours
-Fail Count2 110 719
-
-Bump / OB suggest2 -189 2071
-
-Fail Count3 87 719
-
-Bump / OB suggest3 -133 2069
-
-Pax on PNR and Child
-Fail Count2 73 717
-
-Bump / OB suggest2 -111 2020
-
-Fail Count3 79 717
-
-Bump / OB suggest3 -124 2052
-
-
-
-
-
-
-100 Trees, January to Febuary
-Fail Count 144 1070
-
-Bump / OB suggest -242 3568
-
-Fail Count2 139 1070
-
-Bump / OB suggest2 -217 3082
-
-
-
- Fail Count 149 1023
-
- Bump / OB suggest -258 3380
-
- Fail Count2 125 1023
-
- Bump / OB suggest2 -199 2951
-
- 4% ratio
-
- Fail Count 149 1023
-
- Bump / OB suggest -258 3380
-
- Fail Count2 125 1023
-
- Bump / OB suggest2 -199 2951
-
-
-3% ratio
-Fail Count 84 996
-
-Bump / OB suggest -127 2960
-
-Fail Count2 69 996
-
-Bump / OB suggest2 -100 2488
-
-2% ratio
-Fail Count 86 1017
-
-Bump / OB suggest -147 281
-
-
-7
-
-Fail Count2 57 1017
-
-Bump / OB suggest2 -79 2267
-
-
-With hour
-Fail Count 72 692
-
-Bump / OB suggest -141 2512
-
-Fail Count2 67 692
-
-Bump / OB suggest2 -98 2248
+The above table shows that using the Logistic Regression would result in 394 additional passengers being bumped, but would lead to over $250,000 in additional revenue for the month of April.
