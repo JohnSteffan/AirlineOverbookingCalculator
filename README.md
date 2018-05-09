@@ -3,13 +3,13 @@
 During my time as an operations research analyst at Frontier Airlines, I had access to a lot of data,
 that I could not fully take advantage of.  This is what motivated me to study Data Science at Galvanize.
 
-One of the problems in particular that I took interest in was how to use passenger level data to determine the optimal overbooking level for a given upcoming flight.  If passenger level data shows a very low chance of no shows, there should not be any overbooking.
+One of the problems in particular that I took interest in was how to use passenger level data to determine the optimal overbooking level for a given upcoming flight.
 
 ## Overview
 
 Anytime a flight takes off with an empty seat due to a passenger not showing up for their flight (no show), the airline looses potential revenue, because an extra seat could have been sold.  The objective of this project is to discover how to recover some of this potential revenue, without bumping too many passengers.
 
-It is believed that data on individual passengers (Age, Advanced Purchase, Ancillary Purchase,...) that have purchased tickets can greatly influence their probability of showing up.
+It is believed that data on individual passengers (Age, Advanced Purchase, Ancillary Purchase,ect) can be used to estimate their probability of missing their flight.
 
 In the event that an airline overbooks too much, and passengers have to be bumped, passengers will first be offered compansation in the form of airline flight vouchers to take a later flight.  Thus, a passenger that volunerally takes this compansation would be happier than had they taken the original flight.
 
@@ -23,7 +23,7 @@ Passengers who missed their original flights but were rebooked on later flights 
 
 ## EDA
 
-If we combine the age of a passenger, and weather or not they purchase an ancillary item, we get the below graph.  The graph below shows that passengers that purchase ancillary items are more likely to show up for there flight than those who do not.  It also appears that 10 year olds are the most likely to make a flight, while 20 year olds are the least likely.
+If we combine the age of a passenger, and whether or not they purchase an ancillary item, we get the below graph.  The graph below shows that passengers that purchase ancillary items are more likely to show up for there flight than those who do not.  It also appears that 10 year olds are the most likely to make a flight, while 20 year olds are the least likely.
 
 ![alt text](Figs/Age2.png)
 
@@ -42,6 +42,12 @@ For this study the following features were pulled for a one year period for Fron
 | Flight Hour | Hour of the day that the flight departs |
 |  |  |
 
+
+## Model
+
+After running the model with Logisitic Regression and Random Forests, the Logistic Regression Model proved to be better at matching the training data.  It turns out that passenger age did not have a significant impact on a passengers probability of no showing for a flight, because the real factor was how many passengers were traveling together.  Passengers traveling alone were much more likely to miss a flight.
+
+Logistic Regression was used to determine a P-value for each passenger on a flight to no show.  Then, with resampling, it became possible to get a confidence interval for the number of noshows for a flight.
 
 ## Flight Level Results
 
