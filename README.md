@@ -29,7 +29,7 @@ If we combine the age of a passenger, and whether or not they purchase an ancill
 
 ## Features
 
-For this study the following features were pulled for a one year period for Frontier Airlines.
+For this study the following features were pulled for a one year period for Frontier Airlines.  Please note, a passenger that pays for an ancillary item pays in advance to check a bag or have a seat assignment.  It is assumed that someone that pays in advance for such a product is more intent on actually traveling.
 
 | Feature Name | Description |
 | ------------ |:------------------------:|
@@ -47,7 +47,7 @@ For this study the following features were pulled for a one year period for Fron
 
 After running the model with Logisitic Regression and Random Forests, the Logistic Regression Model proved to be better at matching the training data.  It turns out that passenger age did not have a significant impact on a passengers probability of no showing for a flight, because the real factor was how many passengers were traveling together.  Passengers traveling alone were much more likely to miss a flight.
 
-Logistic Regression was used to determine a P-value for each passenger on a flight to no show.  Then, with resampling, it became possible to get a confidence interval for the number of noshows for a flight.
+Logistic Regression was used to determine a P-value for each passenger on a flight to no show.  Then, with resampling, it became possible to get a confidence interval for the number of noshows for a flight.  The model then used a 95% confidence interval to protect against bumping passengers.
 
 ## Flight Level Results
 
@@ -63,6 +63,7 @@ If we look at two flights, one of which had zero no shows, and the other which h
 
 
 ## Overall Results
+
 For this example, January to March 2016 data was used to predict April 2016 no shows.  The acutall no shows for April 2016 were then compared to the two model predictions.
 
 In April 2016 there were a total of 28,252 no shows, which gives plenty of space for additional revenue.
