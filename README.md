@@ -23,6 +23,10 @@ Passengers who missed their original flights but were rebooked on later flights 
 
 ## EDA
 
+Looking at the histogram below, it can be seen that there is a lot of space to book more passengers.
+
+![alt text](Figs/ActualNoShowHist.png)
+
 If we combine the age of a passenger, and whether or not they purchase an ancillary item, we get the below graph.  The graph below shows that passengers that purchase ancillary items are more likely to show up for there flight than those who do not.  It also appears that 10 year olds are the most likely to make a flight, while 20 year olds are the least likely.
 
 ![alt text](Figs/Age2.png)
